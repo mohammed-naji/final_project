@@ -46,6 +46,13 @@
         </style>
     @endif
 
+    <style>
+        .table td,
+        .table th {
+            vertical-align: middle
+        }
+    </style>
+
     @yield('styles')
 
 </head>
