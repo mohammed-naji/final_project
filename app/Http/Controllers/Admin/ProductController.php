@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
-class CategoryController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +17,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('parent', 'products')->orderByDesc('id')->paginate(10);
+        $products = Product::with('category')->orderByDesc('id')->paginate(10);
 
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.products.index', compact('products'));
     }
 
     /**
@@ -28,8 +29,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::select('id', 'name_en', 'name_ar')->whereNull('parent_id')->get();
-        return view('admin.categories.create', compact('categories'));
+        $categories = Category::select('id', 'name_en', 'name_ar')->get();
+        return view('admin.products.create', compact('categories'));
     }
 
     /**
@@ -44,7 +45,7 @@ class CategoryController extends Controller
         $request->validate([
             'name_en' => 'required',
             'name_ar' => 'required',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parent_id' => 'nullable|exists:products,id',
         ]);
 
         // Upload Images
@@ -52,11 +53,11 @@ class CategoryController extends Controller
         if($request->hasFile('image')) {
             $img = $request->file('image');
             $img_name = rand(). time().$img->getClientOriginalName();
-            $img->move(public_path('uploads/categories'), $img_name);
+            $img->move(public_path('uploads/products'), $img_name);
         }
 
         // Store To Database
-        Category::create([
+        Product::create([
             'name_en' => $request->name_en,
             'name_ar' => $request->name_ar,
             'image' => $img_name,
@@ -64,7 +65,7 @@ class CategoryController extends Controller
         ]);
 
         // Redirect
-        return redirect()->route('admin.categories.index')->with('msg', 'Category added successfully')->with('type', 'success');
+        return redirect()->route('admin.products.index')->with('msg', 'Product added successfully')->with('type', 'success');
     }
 
     /**
@@ -75,14 +76,14 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        // $category = Category::findOrFail($id);
-        // $category = Category::find($id);
+        // $product = Product::findOrFail($id);
+        // $product = Product::find($id);
 
-        // if(!$category) {
+        // if(!$product) {
         //     abort(404);
         // }
 
-        // dd($category);
+        // dd($product);
     }
 
     /**
@@ -93,10 +94,10 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::findOrFail($id);
-        $categories = Category::select('id', 'name_en', 'name_ar')->whereNull('parent_id')->where('id', '!=', $category->id)->get();
+        $product = Product::findOrFail($id);
+        $categories = Category::select('id', 'name_en', 'name_ar')->get();
 
-        return view('admin.categories.edit', compact('category', 'categories'));
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -112,21 +113,21 @@ class CategoryController extends Controller
         $request->validate([
             'name_en' => 'required',
             'name_ar' => 'required',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parent_id' => 'nullable|exists:products,id',
         ]);
 
-        $category = Category::findOrFail($id);
+        $product = Product::findOrFail($id);
 
         // Upload Images
-        $img_name = $category->image;
+        $img_name = $product->image;
         if($request->hasFile('image')) {
             $img = $request->file('image');
             $img_name = rand(). time().$img->getClientOriginalName();
-            $img->move(public_path('uploads/categories'), $img_name);
+            $img->move(public_path('uploads/products'), $img_name);
         }
 
         // Store To Database
-        $category->update([
+        $product->update([
             'name_en' => $request->name_en,
             'name_ar' => $request->name_ar,
             'image' => $img_name,
@@ -134,7 +135,7 @@ class CategoryController extends Controller
         ]);
 
         // Redirect
-        return redirect()->route('admin.categories.index')->with('msg', 'Category updated successfully')->with('type', 'info');
+        return redirect()->route('admin.products.index')->with('msg', 'Product updated successfully')->with('type', 'info');
     }
 
     /**
@@ -145,36 +146,34 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $product = Product::findOrFail($id);
 
-        File::delete(public_path('uplaods/categories/'.$category->image));
+        File::delete(public_path('uplaods/products/'.$product->image));
 
-        $category->children()->update(['parent_id' => null]);
+        $product->delete();
 
-        $category->delete();
-
-        return redirect()->route('admin.categories.index')->with('msg', 'Category deleted successfully')->with('type', 'danger');
+        return redirect()->route('admin.products.index')->with('msg', 'Product deleted successfully')->with('type', 'danger');
     }
 
     public function trash()
     {
-        $categories = Category::onlyTrashed()->orderByDesc('id')->paginate(10);
+        $products = Product::onlyTrashed()->orderByDesc('id')->paginate(10);
 
-        return view('admin.categories.trash', compact('categories'));
+        return view('admin.products.trash', compact('products'));
     }
 
     public function restore($id)
     {
-        // Category::onlyTrashed()->find($id)->update(['deleted_at' => null]);
-        Category::onlyTrashed()->find($id)->restore();
+        // Product::onlyTrashed()->find($id)->update(['deleted_at' => null]);
+        Product::onlyTrashed()->find($id)->restore();
 
-        return redirect()->route('admin.categories.index')->with('msg', 'Category restored successfully')->with('type', 'warning');
+        return redirect()->route('admin.products.index')->with('msg', 'Product restored successfully')->with('type', 'warning');
     }
 
     public function forcedelete($id)
     {
-        Category::onlyTrashed()->find($id)->forcedelete();
+        Product::onlyTrashed()->find($id)->forcedelete();
 
-        return redirect()->route('admin.categories.index')->with('msg', 'Category deleted permanintly successfully')->with('type', 'danger');
+        return redirect()->route('admin.products.index')->with('msg', 'Product deleted permanintly successfully')->with('type', 'danger');
     }
 }
