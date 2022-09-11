@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\MainController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::prefix(LaravelLocalization::setLocale())->group(function() {
@@ -23,6 +25,10 @@ Route::prefix(LaravelLocalization::setLocale())->group(function() {
         Route::delete('products/{id}/forcedelete', [ProductController::class, 'forcedelete'])->name('products.forcedelete');
         Route::resource('products', ProductController::class);
 
+        // Users Routes
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
     });
 });
 
@@ -34,6 +40,4 @@ Route::view('not-allowed', 'not_allowed');
 
 
 // Website Routes
-Route::get('/', function() {
-    return 'fffff';
-})->name('site.index');
+Route::get('/', [MainController::class, 'home'])->name('site.index');

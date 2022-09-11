@@ -30,7 +30,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::select('id', 'name_en', 'name_ar')->get();
-        return view('admin.products.create', compact('categories'));
+        $product = new Product();
+        return view('admin.products.create', compact('categories', 'product'));
     }
 
     /**
@@ -41,27 +42,36 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // Validate Data
         $request->validate([
             'name_en' => 'required',
             'name_ar' => 'required',
-            'parent_id' => 'nullable|exists:products,id',
+            'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif',
+            'content_en' => 'required',
+            'content_ar' => 'required',
+            'price' => 'required|numeric',
+            'quantity' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         // Upload Images
-        $img_name = null;
-        if($request->hasFile('image')) {
-            $img = $request->file('image');
-            $img_name = rand(). time().$img->getClientOriginalName();
-            $img->move(public_path('uploads/products'), $img_name);
-        }
+        $img = $request->file('image');
+        $img_name = rand(). time().$img->getClientOriginalName();
+        $img->move(public_path('uploads/products'), $img_name);
+
 
         // Store To Database
         Product::create([
             'name_en' => $request->name_en,
             'name_ar' => $request->name_ar,
             'image' => $img_name,
-            'parent_id' => $request->parent_id,
+            'content_en' => $request->content_en,
+            'content_ar' => $request->content_ar,
+            'price' => $request->price,
+            'sale_price' => $request->sale_price,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id,
         ]);
 
         // Redirect
@@ -113,7 +123,12 @@ class ProductController extends Controller
         $request->validate([
             'name_en' => 'required',
             'name_ar' => 'required',
-            'parent_id' => 'nullable|exists:products,id',
+            'image' => 'nullable|image|mimes:png,jpg,jpeg,svg,gif',
+            'content_en' => 'required',
+            'content_ar' => 'required',
+            'price' => 'required|numeric',
+            'quantity' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $product = Product::findOrFail($id);
@@ -121,6 +136,7 @@ class ProductController extends Controller
         // Upload Images
         $img_name = $product->image;
         if($request->hasFile('image')) {
+            File::delete(public_path('uploads/products/'.$product->image));
             $img = $request->file('image');
             $img_name = rand(). time().$img->getClientOriginalName();
             $img->move(public_path('uploads/products'), $img_name);
@@ -131,7 +147,12 @@ class ProductController extends Controller
             'name_en' => $request->name_en,
             'name_ar' => $request->name_ar,
             'image' => $img_name,
-            'parent_id' => $request->parent_id,
+            'content_en' => $request->content_en,
+            'content_ar' => $request->content_ar,
+            'price' => $request->price,
+            'sale_price' => $request->sale_price,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id,
         ]);
 
         // Redirect
@@ -148,7 +169,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        File::delete(public_path('uplaods/products/'.$product->image));
+        File::delete(public_path('uploads/products/'.$product->image));
 
         $product->delete();
 

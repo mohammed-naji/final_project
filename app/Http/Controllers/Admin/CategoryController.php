@@ -147,7 +147,7 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        File::delete(public_path('uplaods/categories/'.$category->image));
+        File::delete(public_path('uploads/categories/'.$category->image));
 
         $category->children()->update(['parent_id' => null]);
 
