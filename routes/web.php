@@ -10,6 +10,8 @@ use App\Http\Controllers\MainController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::prefix(LaravelLocalization::setLocale())->group(function() {
+
+    // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware('auth', 'check_user')->group(function() {
         Route::get('/', [AdminController::class, 'index'])->name('index');
 
@@ -30,14 +32,21 @@ Route::prefix(LaravelLocalization::setLocale())->group(function() {
         Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
     });
+
+    // Website Routes
+    Auth::routes();
+
+    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    Route::view('not-allowed', 'not_allowed');
+
+
+    // Website Routes
+    Route::get('/', [MainController::class, 'home'])->name('site.index');
+    Route::get('/shop', [MainController::class, 'shop'])->name('site.shop');
+    Route::get('/category/{id}', [MainController::class, 'category'])->name('site.category');
+    Route::get('/search', [MainController::class, 'search'])->name('site.search');
+    Route::get('/product/{id}', [MainController::class, 'product'])->name('site.product');
+
 });
 
-Auth::routes();
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::view('not-allowed', 'not_allowed');
-
-
-// Website Routes
-Route::get('/', [MainController::class, 'home'])->name('site.index');

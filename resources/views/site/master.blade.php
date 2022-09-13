@@ -1,3 +1,7 @@
+@php
+    $name = 'name_'.app()->currentLocale();
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,14 +49,16 @@
 		<div class="row">
 			<div class="col-md-4 col-xs-12 col-sm-4">
 				<div class="contact-number">
-					<i class="tf-ion-ios-telephone"></i>
-					<span>0129- 12323-123123</span>
+					<a href="tel:0129- 12323-123123">
+                        <i class="tf-ion-ios-telephone"></i>
+					    <span>0129- 12323-123123</span>
+                    </a>
 				</div>
 			</div>
 			<div class="col-md-4 col-xs-12 col-sm-4">
 				<!-- Site Logo -->
 				<div class="logo text-center">
-					<a href="index-2.html">
+					<a href="{{ route('site.index') }}">
 						<!-- replace logo here -->
 						<svg width="135px" height="29px" viewBox="0 0 155 29" version="1.1" xmlns="http://www.w3.org/2000/svg"
 							xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -124,18 +130,18 @@
 								class="tf-ion-ios-search-strong"></i> Search</a>
 						<ul class="dropdown-menu search-dropdown">
 							<li>
-								<form action="https://demo.themefisher.com/aviato/post"><input type="search" class="form-control" placeholder="Search..."></form>
+								<form action="{{ route('site.search') }}" method="get"><input type="search" name="s" class="form-control" value="{{ request()->s }}" placeholder="Search..."></form>
 							</li>
 						</ul>
 					</li><!-- / Search -->
 
 					<!-- Languages -->
 					<li class="commonSelect">
-						<select class="form-control">
-							<option>EN</option>
-							<option>DE</option>
-							<option>FR</option>
-							<option>ES</option>
+						<select class="form-control" onchange="window.location.href = this.value">
+                            @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+							<option {{ app()->currentLocale() == $localeCode ? '
+                            selected' : '' }} value="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">{{ $properties['native'] }}</option>
+                            @endforeach
 						</select>
 					</li><!-- / Languages -->
 
@@ -168,127 +174,23 @@
 
 					<!-- Home -->
 					<li class="dropdown ">
-						<a href="index-2.html">Home</a>
+						<a href="{{ route('site.index') }}">Home</a>
 					</li><!-- / Home -->
 
-
-					<!-- Elements -->
-					<li class="dropdown dropdown-slide">
-						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350"
-							role="button" aria-haspopup="true" aria-expanded="false">Shop <span
-								class="tf-ion-ios-arrow-down"></span></a>
-						<div class="dropdown-menu">
-							<div class="row">
-
-								<!-- Basic -->
-								<div class="col-lg-6 col-md-6 mb-sm-3">
-									<ul>
-										<li class="dropdown-header">Pages</li>
-										<li role="separator" class="divider"></li>
-										<li><a href="shop.html">Shop</a></li>
-										<li><a href="checkout.html">Checkout</a></li>
-										<li><a href="cart.html">Cart</a></li>
-										<li><a href="pricing.html">Pricing</a></li>
-										<li><a href="confirmation.html">Confirmation</a></li>
-
-									</ul>
-								</div>
-
-								<!-- Layout -->
-								<div class="col-lg-6 col-md-6 mb-sm-3">
-									<ul>
-										<li class="dropdown-header">Layout</li>
-										<li role="separator" class="divider"></li>
-										<li><a href="product-single.html">Product Details</a></li>
-										<li><a href="shop-sidebar.html">Shop With Sidebar</a></li>
-
-									</ul>
-								</div>
-
-							</div><!-- / .row -->
-						</div><!-- / .dropdown-menu -->
-					</li><!-- / Elements -->
-
-
-					<!-- Pages -->
-					<li class="dropdown full-width dropdown-slide">
-						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350"
-							role="button" aria-haspopup="true" aria-expanded="false">Pages <span
-								class="tf-ion-ios-arrow-down"></span></a>
-						<div class="dropdown-menu">
-							<div class="row">
-
-								<!-- Introduction -->
-								<div class="col-sm-3 col-xs-12">
-									<ul>
-										<li class="dropdown-header">Introduction</li>
-										<li role="separator" class="divider"></li>
-										<li><a href="contact.html">Contact Us</a></li>
-										<li><a href="about.html">About Us</a></li>
-										<li><a href="404.html">404 Page</a></li>
-										<li><a href="coming-soon.html">Coming Soon</a></li>
-										<li><a href="faq.html">FAQ</a></li>
-									</ul>
-								</div>
-
-								<!-- Contact -->
-								<div class="col-sm-3 col-xs-12">
-									<ul>
-										<li class="dropdown-header">Dashboard</li>
-										<li role="separator" class="divider"></li>
-										<li><a href="dashboard.html">User Interface</a></li>
-										<li><a href="order.html">Orders</a></li>
-										<li><a href="address.html">Address</a></li>
-										<li><a href="profile-details.html">Profile Details</a></li>
-									</ul>
-								</div>
-
-								<!-- Utility -->
-								<div class="col-sm-3 col-xs-12">
-									<ul>
-										<li class="dropdown-header">Utility</li>
-										<li role="separator" class="divider"></li>
-										<li><a href="login.html">Login Page</a></li>
-										<li><a href="signin.html">Signin Page</a></li>
-										<li><a href="forget-password.html">Forget Password</a></li>
-									</ul>
-								</div>
-
-								<!-- Mega Menu -->
-								<div class="col-sm-3 col-xs-12">
-									<a href="shop.html">
-										<img class="img-responsive" src="images/shop/header-img.jpg" alt="menu image" />
-									</a>
-								</div>
-							</div><!-- / .row -->
-						</div><!-- / .dropdown-menu -->
-					</li><!-- / Pages -->
-
-
+                    <li class="dropdown ">
+						<a href="{{ route('site.shop') }}">Shop</a>
+					</li><!-- / Home -->
 
 					<!-- Blog -->
 					<li class="dropdown dropdown-slide">
 						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350"
-							role="button" aria-haspopup="true" aria-expanded="false">Blog <span
+							role="button" aria-haspopup="true" aria-expanded="false">Categories <span
 								class="tf-ion-ios-arrow-down"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="blog-left-sidebar.html">Blog Left Sidebar</a></li>
-							<li><a href="blog-right-sidebar.html">Blog Right Sidebar</a></li>
-							<li><a href="blog-full-width.html">Blog Full Width</a></li>
-							<li><a href="blog-grid.html">Blog 2 Columns</a></li>
-							<li><a href="blog-single.html">Blog Single</a></li>
-						</ul>
-					</li><!-- / Blog -->
+                            @foreach ($global_categories as $item)
+                                <li><a href="{{ route('site.category', $item->id) }}">{{ $item->$name }}</a></li>
+                            @endforeach
 
-					<!-- Shop -->
-					<li class="dropdown dropdown-slide">
-						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350"
-							role="button" aria-haspopup="true" aria-expanded="false">Elements <span
-								class="tf-ion-ios-arrow-down"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="typography.html">Typography</a></li>
-							<li><a href="buttons.html">Buttons</a></li>
-							<li><a href="alerts.html">Alerts</a></li>
 						</ul>
 					</li><!-- / Blog -->
 				</ul><!-- / .nav .navbar-nav -->
