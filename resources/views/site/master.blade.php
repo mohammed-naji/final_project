@@ -81,40 +81,36 @@
 						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"><i
 								class="tf-ion-android-cart"></i>Cart</a>
 						<div class="dropdown-menu cart-dropdown">
-							<!-- Cart Item -->
-							<div class="media">
-								<a class="pull-left" href="#!">
-									<img class="media-object" src="images/shop/cart/cart-1.jpg" alt="image" />
-								</a>
-								<div class="media-body">
-									<h4 class="media-heading"><a href="#!">Ladies Bag</a></h4>
-									<div class="cart-price">
-										<span>1 x</span>
-										<span>1250.00</span>
-									</div>
-									<h5><strong>$1200</strong></h5>
-								</div>
-								<a href="#!" class="remove"><i class="tf-ion-close"></i></a>
-							</div><!-- / Cart Item -->
-							<!-- Cart Item -->
-							<div class="media">
-								<a class="pull-left" href="#!">
-									<img class="media-object" src="images/shop/cart/cart-2.jpg" alt="image" />
-								</a>
-								<div class="media-body">
-									<h4 class="media-heading"><a href="#!">Ladies Bag</a></h4>
-									<div class="cart-price">
-										<span>1 x</span>
-										<span>1250.00</span>
-									</div>
-									<h5><strong>$1200</strong></h5>
-								</div>
-								<a href="#!" class="remove"><i class="tf-ion-close"></i></a>
-							</div><!-- / Cart Item -->
+                            @php
+                                $total = 0;
+                            @endphp
+                            @foreach (auth()->user()->carts as $cart)
+                            <!-- Cart Item -->
+                            <div class="media">
+                                <a class="pull-left" href="{{ route('site.product', $cart->product_id) }}">
+                                    <img class="media-object" src="{{ asset('uploads/products/'.$cart->product->image) }}" alt="image" />
+                                </a>
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a href="{{ route('site.product', $cart->product_id) }}">{{ $cart->product->$name }}</a></h4>
+                                    <div class="cart-price">
+                                        <span>{{ $cart->quantity }} x</span>
+                                        <span>{{ $cart->price }}</span>
+                                    </div>
+                                    <h5><strong>${{ $cart->quantity * $cart->price }}</strong></h5>
+                                </div>
+                                <a href="#!" class="remove"><i class="tf-ion-close"></i></a>
+                            </div><!-- / Cart Item -->
+
+                            @php
+                                $total += $cart->quantity * $cart->price;
+                            @endphp
+
+                            @endforeach
+
 
 							<div class="cart-summary">
 								<span>Total</span>
-								<span class="total-price">$1799.00</span>
+								<span class="total-price">${{ $total }}</span>
 							</div>
 							<ul class="text-center cart-buttons">
 								<li><a href="cart.html" class="btn btn-small">View Cart</a></li>
@@ -181,18 +177,30 @@
 						<a href="{{ route('site.shop') }}">Shop</a>
 					</li><!-- / Home -->
 
-					<!-- Blog -->
-					<li class="dropdown dropdown-slide">
-						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350"
-							role="button" aria-haspopup="true" aria-expanded="false">Categories <span
-								class="tf-ion-ios-arrow-down"></span></a>
-						<ul class="dropdown-menu">
-                            @foreach ($global_categories as $item)
-                                <li><a href="{{ route('site.category', $item->id) }}">{{ $item->$name }}</a></li>
-                            @endforeach
+                    <li class="dropdown full-width dropdown-slide">
+						<a href="#!" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="350" role="button" aria-haspopup="true" aria-expanded="false">Categories <span class="tf-ion-ios-arrow-down"></span></a>
+						<div class="dropdown-menu">
+							<div class="row">
 
-						</ul>
-					</li><!-- / Blog -->
+                                @foreach ($global_categories as $item)
+                                <div class="col-sm-3 col-xs-12">
+									<ul>
+                                        <li class="dropdown-header">{{ $item->$name }}</li>
+                                        <li role="separator" class="divider"></li>
+                                        @foreach ($item->children as $child)
+                                        <li><a href="{{ route('site.category', $child->id) }}">{{ $child->$name }}</a></li>
+                                        @endforeach
+
+									</ul>
+								</div>
+                                @endforeach
+								<!-- Introduction -->
+
+
+							</div><!-- / .row -->
+						</div><!-- / .dropdown-menu -->
+					</li>
+
 				</ul><!-- / .nav .navbar-nav -->
 
 			</div>

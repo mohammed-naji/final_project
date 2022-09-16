@@ -2,11 +2,12 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CategoryController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::prefix(LaravelLocalization::setLocale())->group(function() {
@@ -47,6 +48,8 @@ Route::prefix(LaravelLocalization::setLocale())->group(function() {
     Route::get('/category/{id}', [MainController::class, 'category'])->name('site.category');
     Route::get('/search', [MainController::class, 'search'])->name('site.search');
     Route::get('/product/{id}', [MainController::class, 'product'])->name('site.product');
+
+    Route::post('add-to-cart', [CartController::class, 'add_to_cart'])->name('site.add_to_cart');
 
 });
 

@@ -34,4 +34,16 @@ class MainController extends Controller
         $products = Product::orderByDesc('id')->where('name_'.app()->currentLocale(), 'like', '%'.$request->s.'%')->get();
         return view('site.search', compact('products'));
     }
+
+    public function product($id)
+    {
+        $product = Product::with('reviews', 'category')->findOrfail($id);
+
+        $next = Product::where('id', '>', $product->id)->first();
+        $prev = Product::select('id')->where('id', '<', $product->id)->orderByDesc('id')->first();
+
+        $related = Product::where('category_id', $product->category_id)->where('id', '!=', $product->id)->get();
+
+        return view('site.product', compact('product', 'next', 'prev', 'related'));
+    }
 }
