@@ -50,6 +50,10 @@ Route::prefix(LaravelLocalization::setLocale())->group(function() {
     Route::get('/product/{id}', [MainController::class, 'product'])->name('site.product');
 
     Route::post('add-to-cart', [CartController::class, 'add_to_cart'])->name('site.add_to_cart');
+    Route::get('/cart', [CartController::class, 'cart'])->name('site.cart')->middleware('auth');
+    Route::delete('/cart/{id}', [CartController::class, 'delete_cart'])->name('site.delete_cart')->middleware('auth');
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('site.checkout')->middleware('auth');
+    Route::get('/payment', [CartController::class, 'payment'])->name('site.payment')->middleware('auth');
 
 });
 
