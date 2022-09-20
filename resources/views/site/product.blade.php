@@ -2,6 +2,9 @@
 
 @section('title', 'Product | ' . env('APP_NAME'))
 
+@section('description', Str::words(strip_tags($product->$content), 40, '...'))
+@section('keywords', $product->$name)
+
 @section('content')
 <section class="single-product">
 	<div class="container">

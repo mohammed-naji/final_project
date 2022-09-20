@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -97,24 +101,65 @@ class CartController extends Controller
         curl_close($ch);
         $responseData = json_decode( $responseData, true );
 
+        // dd($responseData);
+
         $code = $responseData['result']['code'];
+        $total = $responseData['amount'];
+        $transaction_id = $responseData['id'];
         // dd($code);
         if($code == '000.100.110'){
-            echo 'Done';
-            // Create new Order
+            DB::beginTransaction();
+            try{
+                // Create new Order
+                $order = Order::create([
+                    'total'	=> $total,
+                    'user_id' => Auth::id()
+                ]);
 
-            // add cart to order items
+                // add cart to order items
+                foreach(Auth::user()->carts as $cart) {
+                    OrderItem::create([
+                        'price' => $cart->price,
+                        'quantity' => $cart->quantity,
+                        'product_id' => $cart->product_id,
+                        'user_id' => $cart->user_id,
+                        'order_id' => $order->id,
+                    ]);
 
-            // create payment recodr
+                    Product::find($cart->product_id)->decrement('quantity', $cart->quantity);
 
-            // decrease product quantity
+                    $cart->delete();
+                }
 
-            // delete cart items
+                // create payment recodr
+                Payment::create([
+                    'total' => $total,
+                    'user_id' => Auth::id(),
+                    'order_id' => $order->id,
+                    'transaction_id' => $transaction_id
+                ]);
+
+                DB::commit();
+            }catch(Exception $e) {
+                DB::rollBack();
+                throw new Exception($e->getMessage());
+            }
 
             // redirect to success page
+            return redirect()->route('site.success');
         }else {
-            echo 'Error';
             // redirect to errro page
+            return redirect()->route('site.fail');
         }
+    }
+
+    public function success()
+    {
+        return view('site.success');
+    }
+
+    public function fail()
+    {
+        return view('site.fail');
     }
 }

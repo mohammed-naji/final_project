@@ -3,7 +3,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->currentLocale() }}">
 
 <!-- Mirrored from demo.themefisher.com/aviato/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 15 Aug 2022 11:27:24 GMT -->
 <head>
@@ -16,10 +16,12 @@
   <!-- Mobile Specific Metas
   ================================================== -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="Construction Html5 Template">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+  <meta name="description" content="@yield('description')">
+  <meta name="keywords" content="@yield('keywords')">
   <meta name="author" content="Themefisher">
-  <meta name="generator" content="Themefisher Constra HTML Template v1.0">
+  <meta name="generator" content="Mohammed Naji Abu Alqumbuz - Final Project v1">
 
   <!-- Favicon -->
   <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png" />

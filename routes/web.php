@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbuArefController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
@@ -54,6 +55,12 @@ Route::prefix(LaravelLocalization::setLocale())->group(function() {
     Route::delete('/cart/{id}', [CartController::class, 'delete_cart'])->name('site.delete_cart')->middleware('auth');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('site.checkout')->middleware('auth');
     Route::get('/payment', [CartController::class, 'payment'])->name('site.payment')->middleware('auth');
+    Route::get('/payment/success', [CartController::class, 'success'])->name('site.success')->middleware('auth');
+    Route::get('/payment/fail', [CartController::class, 'fail'])->name('site.fail')->middleware('auth');
+
+    Route::get('/abu-aref', [AbuArefController::class, 'abu_aref'])->name('site.abu_aref');
+
+    Route::post('/abu-aref', [AbuArefController::class, 'abu_aref_data'])->name('site.abu_aref_data');
 
 });
 
